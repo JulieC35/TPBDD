@@ -29,7 +29,7 @@ import javax.swing.JPanel;
  *
  */
 public class DatabaseUserInterface extends java.applet.Applet implements ActionListener {
-//burk
+//burk burk burk
 	private TextField mStat, m1, m2, m3, tfTable;
 	TextArea mRes;
 	private Button b1, b2, b3, b4;
