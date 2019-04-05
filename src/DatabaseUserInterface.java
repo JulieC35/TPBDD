@@ -35,8 +35,11 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	private Button b1, b2, b3, b4;
 	JPanel pBut, panStatus, pChampsQuery;
 	JMenuBar menuBar = new JMenuBar();
+	JMenuBar menuInsertBar = new JMenuBar();
     JMenu menuBase = new JMenu("Base");
     JMenu menu = new JMenu("Requetes");
+    JMenu menuInsert = new JMenu("INSERT");
+    JMenuItem itemCours, itemCreneaux, itemEnseignant, itemEtudiant, itemHoraire, itemMatiere, itemParcours, itemSalle;
     JMenuItem item1 = new JMenuItem("Liste de tous les étudiants");
     JMenuItem item2 = new JMenuItem("Requete aléatoire");
     JMenuItem itemConnect = new JMenuItem("connect");
@@ -101,10 +104,22 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		b3 = new Button("QUERY");
 		b4 = new Button("INSERT");
 		
+		itemCours = new JMenuItem("Cours");
+		itemCreneaux = new JMenuItem("Creneaux");
+		itemEnseignant = new JMenuItem("Enseignant");
+		itemEtudiant = new JMenuItem("Etudiant");
+		itemHoraire = new JMenuItem("Horaire");
+		itemMatiere = new JMenuItem("Matiere");
+		itemParcours = new JMenuItem("Parcours");
+		itemSalle = new JMenuItem("Salle");
+		
 		b1.addActionListener(this);
 		b2.addActionListener(this);
 		b3.addActionListener(this);
 		b4.addActionListener(this);
+		menuInsert.addActionListener(this);
+		//menuInsertBar.addAncestorListener(this);
+		itemEtudiant.addActionListener(this);
 		item1.addActionListener(this);
 		item2.addActionListener(this);
 		itemConnect.addActionListener(this);
@@ -126,13 +141,31 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		pBut.add(b1) ;
 		pBut.add(b2) ;
 		pBut.add(b3) ;
-		pBut.add(b4);
+		//pBut.add(b4);
+		
+		menuInsert.add(itemCours);
+		menuInsert.addSeparator();
+	    menuInsert.add(itemCreneaux);
+	    menuInsert.addSeparator();
+	    menuInsert.add(itemEnseignant);
+	    menuInsert.addSeparator();
+	    menuInsert.add(itemEtudiant);
+	    menuInsert.addSeparator();
+	    menuInsert.add(itemHoraire);
+	    menuInsert.addSeparator();
+	    menuInsert.add(itemMatiere);
+	    menuInsert.addSeparator();
+	    menuInsert.add(itemParcours);
+	    menuInsert.addSeparator();
+	    menuInsert.add(itemSalle);
+	    menuInsertBar.add(menuInsert);
+		pBut.add(menuInsertBar);
 		
 		add(pBut, BorderLayout.WEST);
 		
-		menu.add(item1);
+		/*menu.add(item1);
 	    menu.addSeparator();
-	    menu.add(item2);
+	    menu.add(item2);*/
 	    menuBase.add(itemConnect);
 		menuBar.add(menuBase);
 	    menuBar.add(menu);
@@ -193,10 +226,20 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		} else
 
 		//Button INSERT
-		if (cause == b4)
+		if (cause == menuInsertBar || cause == menuInsert)
 		{
 			insertDatabase();
 		} else 
+			
+		if(cause == itemEtudiant) {
+			m2.setText("Prenom");
+			m3.setText("idEtudiant");
+			currentTable = tables.Etudiant;
+		}
+		
+		
+		
+		else 
 			
 		//Button Lister les étudiants
 		if (cause == item1) {
@@ -293,13 +336,23 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	private void insertDatabase(){
 		try{
 			String name = m1.getText();
-			String age = m2.getText();
-			String color = m3.getText();
-			setStatus("Inserting --( " + name + ", " + age + ", " + color + " )-- to the database");
-			stmt = conn.createStatement();
-			String requete = "insert into personne(age, nom, couleuryeux) values(" + age + ",\"" + name + "\",\"" + color +"\");";
-			System.out.println(requete);
-			stmt.execute(requete);
+			String prenom = m2.getText();
+			String id = m3.getText();
+			
+			if(currentTable == tables.Etudiant) {
+				stmt = conn.createStatement();
+				String requete = "insert into etudiant(nom, prenom, idEtudiant) values(\"" + name + "\",\"" + prenom + "\"," + id +");";
+				System.out.println(requete);
+				stmt.execute(requete);
+			} else {
+				stmt = conn.createStatement();
+				String requete = "insert into personne(age, nom, couleuryeux) values(" + prenom + ",\"" + name + "\",\"" + id +"\");";
+				System.out.println(requete);
+				stmt.execute(requete);
+			}
+			
+			setStatus("Inserting to the database");
+			
 		} catch(Exception e){
 			System.err.println(e.getMessage());
 			setStatus("Insertion failed");
