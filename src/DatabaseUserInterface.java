@@ -43,6 +43,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     JMenuItem item1 = new JMenuItem("Liste de tous les étudiants");
     JMenuItem item2 = new JMenuItem("Requete aléatoire");
     JMenuItem itemConnect = new JMenuItem("connect");
+    JMenuItem itemDisconnect = new JMenuItem("disconnect");
 	
 	
 	private static final long serialVersionUID = 1L; 
@@ -163,10 +164,14 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		
 		add(pBut, BorderLayout.WEST);
 		
-		/*menu.add(item1);
+		menu.add(item1);
 	    menu.addSeparator();
-	    menu.add(item2);*/
+	    menu.add(item2);
+	    
+	    
 	    menuBase.add(itemConnect);
+	    
+	    
 		menuBar.add(menuBase);
 	    menuBar.add(menu);
 	    
@@ -208,7 +213,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 
 		// Act depending on the user action
 		// Button CONNECT
-		if (cause == b1)
+		if (cause == b1 || cause == itemConnect)
 		{
 			connectToDatabase();
 		} else
@@ -235,7 +240,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			m2.setText("Prenom");
 			m3.setText("idEtudiant");
 			currentTable = tables.Etudiant;
-		}
+		} 
 		
 		
 		
