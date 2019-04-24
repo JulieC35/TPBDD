@@ -1,7 +1,5 @@
 
 import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.Label;
 import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
@@ -9,10 +7,10 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.swing.BoxLayout;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -32,20 +30,23 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 
 	private TextField mStat, m1, m2, m3, m4, m5, tfTable;
 	TextArea mRes;
-	private Button b1, b2, b3, b4;
-	JPanel pBut, panStatus, pChampsQuery;
+	JPanel panStatus, pChampsQuery;
 	JMenuBar menuBar = new JMenuBar();
-	JMenuBar menuInsertBar = new JMenuBar();
     JMenu menuBase = new JMenu("Base");
     JMenu menu = new JMenu("Requetes");
-    JMenu menuInsert = new JMenu("INSERT");
+    
+    //Pour selectionner la table dans Base - Insert
     JMenuItem itemCours, itemCreneaux, itemEnseignant, itemEtudiant, itemHoraire, itemMatiere, itemParcours, itemSalle;
+    
+    //Requetes actuelles dans Requetes
     JMenuItem item1 = new JMenuItem("Liste de tous les étudiants");
     JMenuItem item2 = new JMenuItem("Requete aléatoire");
 
+    //Sous menus de Base
     JMenuItem itemConnect = new JMenuItem("Connect");
     JMenuItem itemDisconnect = new JMenuItem("Disconnect");
     JMenuItem itemQuery = new JMenuItem("Query");
+    JMenu menuInsert = new JMenu("Insert");
     
     
     
@@ -75,15 +76,11 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	 */
 	public void init ()
 	{    
-		/**
-		 * Definition of text fields
-		 */
-		//m1 = new TextField(80);
-		//m1.setText("What are you going to do when the light is:");
-		//m1.setEditable(false);
 		setSize(1500, 500);
 		
 		initComponent();
+		
+		addListeners();
 		
 		addToApplet();
 
@@ -93,32 +90,31 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	}
 
 	protected void initComponent() {
+		
+		//Status
 		mStat = new TextField(150);
 		mStat.setEditable(false);
+		panStatus = new JPanel();
+		
+		//Champs de texte
 		m1 = new TextField(150);
 		m2 = new TextField(150);
 		m3 = new TextField(150);
 		m4 = new TextField(150);
 		m5 = new TextField(150);
 		tfTable = new TextField(150); 
+		pChampsQuery = new JPanel();
+		m1.setText("Name (e.g. John Smith) - Please enter here!");  //According to the database schema
+		m2.setText("Age (e.g. 23)  - Please enter here!"); //According to the database schema
+		m3.setText("Color of the eye (e.g. green) - Please enter here!");  //According to the database schema
+		tfTable.setText("Table to query (e.g. Etudiant) - Please enter here!"); 
+		
+		//Champs résultat
 		mRes = new TextArea(10,150);
 		mRes.setEditable(false);
-		//mTittle.setEditable(false);
-		//mTittle.setText("Application de gestion d'emploi du temps");
+		mRes.setText("Query results");
 
-
-		pBut = new JPanel();
-		panStatus = new JPanel();
-		pChampsQuery = new JPanel();
-		/**
-		 * First we define the buttons, then we add to the Applet, finally add and ActionListener 
-		 * (with a self-reference) to capture the user actions.  
-		 */
-		b1 = new Button("CONNECT");
-		b2 = new Button("DISCONNECT");
-		b3 = new Button("QUERY");
-		b4 = new Button("INSERT");
-		
+		//item Base - Insert
 		itemCours = new JMenuItem("Cours");
 		itemCreneaux = new JMenuItem("Creneaux");
 		itemEnseignant = new JMenuItem("Enseignant");
@@ -128,45 +124,34 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		itemParcours = new JMenuItem("Parcours");
 		itemSalle = new JMenuItem("Salle");
 		
-		b1.addActionListener(this);
-		b2.addActionListener(this);
-		b3.addActionListener(this);
-		b4.addActionListener(this);
-		menuInsert.addActionListener(this);
-		//menuInsertBar.addAncestorListener(this);
-		itemEtudiant.addActionListener(this);
-		item1.addActionListener(this);
-		item2.addActionListener(this);
+		
+	}
+	
+	protected void addListeners() {
+		
+		//Base
 		itemConnect.addActionListener(this);
 		itemDisconnect.addActionListener(this);
 		itemQuery.addActionListener(this);
-
+		//Base - Insert
+		menuInsert.addActionListener(this);
+		itemEtudiant.addActionListener(this);
+		
+		//Requetes
+		item1.addActionListener(this);
+		item2.addActionListener(this);
 		
 		//Ajout item requete Romain	
         EDT_etudiant.addActionListener(this);
         EDT_parcours.addActionListener(this); 
         EDT_prof_crenaux.addActionListener(this); 
-		     
-        
-        
-		m1.setText("Name (e.g. John Smith) - Please enter here!");  //According to the database schema
-		m2.setText("Age (e.g. 23)  - Please enter here!"); //According to the database schema
-		m3.setText("Color of the eye (e.g. green) - Please enter here!");  //According to the database schema
-		tfTable.setText("Table to query (e.g. Etudiant) - Please enter here!"); 
-		
-		mRes.setText("Query results");
 	}
 	
 	protected void addToApplet() {
 		
 		setLayout(new BorderLayout());
 		
-		pBut.setLayout(new BoxLayout(pBut, BoxLayout.PAGE_AXIS));
-		pBut.add(b1) ;
-		pBut.add(b2) ;
-		pBut.add(b3) ;
-		//pBut.add(b4);
-		
+		//Ajout des tables 
 		menuInsert.add(itemCours);
 		menuInsert.addSeparator();
 	    menuInsert.add(itemCreneaux);
@@ -182,12 +167,6 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	    menuInsert.add(itemParcours);
 	    menuInsert.addSeparator();
 	    menuInsert.add(itemSalle);
-	    menuInsertBar.add(menuInsert);
-		//pBut.add(menuInsertBar);
-		
-		//add(pBut, BorderLayout.WEST);
-		
-		
 		
 		//Ajout requete menu romain
 		menu.add(this.EDT_etudiant);
@@ -208,15 +187,11 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	    menuBase.addSeparator();
 	    menuBase.add(menuInsert);
 	    
-	    
-	    
 		menuBar.add(menuBase);
 	    menuBar.add(menu);
 	    
 	    panStatus.add(menuBar);
-		//panStatus.add(mStat);
 		add(panStatus, BorderLayout.NORTH);
-		//add(new Label("Input fields: ", Label.CENTER));
 		
 		pChampsQuery.add(mStat);
 		pChampsQuery.add(m1);
@@ -225,14 +200,10 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		pChampsQuery.add(m4);
 		pChampsQuery.add(m5);
 		pChampsQuery.add(tfTable);
-		/*add(m1);
-		add(m2);
-		add(m3);*/
+
 		
 		pChampsQuery.add(mRes);
-		
-		/*add(new Label("Query results: ", Label.CENTER));
-		add(mRes);*/
+
 		
 		add(pChampsQuery);//, BorderLayout.CENTER);
 		
@@ -253,25 +224,25 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 
 		// Act depending on the user action
 		// Button CONNECT
-		if (cause == b1 || cause == itemConnect)
+		if (cause == itemConnect)
 		{
 			connectToDatabase();
 		} else
 
 		// Button DISCONNECT
-		if (cause == b2 || cause == itemDisconnect)
+		if (cause == itemDisconnect)
 		{
 			disconnectFromDatabase();
 		} else
 
 		//Button QUERY
-		if (cause == b3 || cause == itemQuery)
+		if (cause == itemQuery)
 		{
 			queryDatabase();
 		} else
 
 		//Button INSERT
-		if (cause == menuInsertBar || cause == menuInsert)
+		if (cause == menuInsert)
 		{
 			insertDatabase();
 		} else 
@@ -371,7 +342,11 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(requete);
 			setStatus("Querying the database");
+			ResultSetMetaData rsmd = rs.getMetaData();
 			while(rs.next()) {
+				System.out.println(rsmd.getColumnCount());
+				//Commence à 1
+				System.out.println(rsmd.getColumnName(1));
 				String nom = rs.getString("nom");
 				String prenom = rs.getString("prenom");
 				int idEns = rs.getInt("idEtudiant");
