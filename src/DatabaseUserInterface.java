@@ -27,11 +27,10 @@ import javax.swing.JPanel;
  * 
  * @author zmiklos
  *
- * dfssf
  * */
 public class DatabaseUserInterface extends java.applet.Applet implements ActionListener {
 
-	private TextField mStat, m1, m2, m3, tfTable;
+	private TextField mStat, m1, m2, m3, m4, m5, tfTable;
 	TextArea mRes;
 	private Button b1, b2, b3, b4;
 	JPanel pBut, panStatus, pChampsQuery;
@@ -43,7 +42,9 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     JMenuItem itemCours, itemCreneaux, itemEnseignant, itemEtudiant, itemHoraire, itemMatiere, itemParcours, itemSalle;
     JMenuItem item1 = new JMenuItem("Liste de tous les étudiants");
     JMenuItem item2 = new JMenuItem("Requete aléatoire");
-    JMenuItem itemConnect = new JMenuItem("connect");
+    JMenuItem itemConnect = new JMenuItem("Connect");
+    JMenuItem itemDisconnect = new JMenuItem("Disconnect");
+    JMenuItem itemQuery = new JMenuItem("Query");
 	
 	
 	private static final long serialVersionUID = 1L; 
@@ -86,6 +87,8 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		m1 = new TextField(150);
 		m2 = new TextField(150);
 		m3 = new TextField(150);
+		m4 = new TextField(150);
+		m5 = new TextField(150);
 		tfTable = new TextField(150); 
 		mRes = new TextArea(10,150);
 		mRes.setEditable(false);
@@ -124,6 +127,8 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		item1.addActionListener(this);
 		item2.addActionListener(this);
 		itemConnect.addActionListener(this);
+		itemDisconnect.addActionListener(this);
+		itemQuery.addActionListener(this);
 
 		
 		m1.setText("Name (e.g. John Smith) - Please enter here!");  //According to the database schema
@@ -160,14 +165,25 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	    menuInsert.addSeparator();
 	    menuInsert.add(itemSalle);
 	    menuInsertBar.add(menuInsert);
-		pBut.add(menuInsertBar);
+		//pBut.add(menuInsertBar);
 		
-		add(pBut, BorderLayout.WEST);
+		//add(pBut, BorderLayout.WEST);
 		
 		menu.add(item1);
 	    menu.addSeparator();
 	    menu.add(item2);
+	    
+	    
 	    menuBase.add(itemConnect);
+	    menuBase.addSeparator();
+	    menuBase.add(itemDisconnect);
+	    menuBase.addSeparator();
+	    menuBase.add(itemQuery);
+	    menuBase.addSeparator();
+	    menuBase.add(menuInsert);
+	    
+	    
+	    
 		menuBar.add(menuBase);
 	    menuBar.add(menu);
 	    
@@ -180,6 +196,8 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		pChampsQuery.add(m1);
 		pChampsQuery.add(m2);
 		pChampsQuery.add(m3);
+		pChampsQuery.add(m4);
+		pChampsQuery.add(m5);
 		pChampsQuery.add(tfTable);
 		/*add(m1);
 		add(m2);
@@ -209,19 +227,19 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 
 		// Act depending on the user action
 		// Button CONNECT
-		if (cause == b1)
+		if (cause == b1 || cause == itemConnect)
 		{
 			connectToDatabase();
 		} else
 
 		// Button DISCONNECT
-		if (cause == b2)
+		if (cause == b2 || cause == itemDisconnect)
 		{
 			disconnectFromDatabase();
 		} else
 
 		//Button QUERY
-		if (cause == b3)
+		if (cause == b3 || cause == itemQuery)
 		{
 			queryDatabase();
 		} else
@@ -294,12 +312,15 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	 */
 	private void disconnectFromDatabase(){
 		try{
-			stmt.close();
-			conn.close();
+			if(stmt != null)
+				stmt.close();
+			if(conn != null)
+				conn.close();
 			setStatus("Disconnected from the database");
 			mRes.setText("");
 		} catch(Exception e){
 			System.err.println(e.getMessage());
+			e.printStackTrace();
 			setStatus("Disconnection failed");
 		}
 	}
