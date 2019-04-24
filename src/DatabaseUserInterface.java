@@ -344,16 +344,23 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			ResultSet rs = stmt.executeQuery(requete);
 			setStatus("Querying the database");
 			ResultSetMetaData rsmd = rs.getMetaData();
+			int nbCol = rsmd.getColumnCount();
+			for(int i=1; i <= nbCol; i++) {
+				mRes.append(rsmd.getColumnName(i) + "	|	");
+			}
+			mRes.append("\n");
+			mRes.append("\n");
 			while(rs.next()) {
 				System.out.println(rsmd.getColumnCount());
 				//Commence à 1
 				System.out.println(rsmd.getColumnName(1));
-				String nom = rs.getString("nom");
-				String prenom = rs.getString("prenom");
-				int idEns = rs.getInt("idEtudiant");
-				mRes.append("nom: " + nom + "			|	");
-				mRes.append("prénom : " + prenom + "			|	");
-				mRes.append("id : " + idEns + "\n");
+				
+				for(int i=1; i <= nbCol; i++) {
+					mRes.append(rs.getString(i) + "	|	");
+					
+				}
+				mRes.append("\n");
+				
 			}
 			stmt.close();
 			
