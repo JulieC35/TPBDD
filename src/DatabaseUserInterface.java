@@ -298,7 +298,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		
 		
 		else if(cause == this.EDT_etudiant) {
-			
+			request_EDT_etudiant();
 		}
 		
 		else if(cause == this.EDT_parcours) {
@@ -338,6 +338,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			setStatus("Connected to the database");
 		} catch(Exception e){
 			System.err.println(e.getMessage());
+			e.printStackTrace();
 			setStatus("Connection failed");
 		}
 	}
@@ -416,6 +417,21 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			setStatus("Insertion failed");
 		}
 
+	}
+	
+	
+	//Les requetes de ROMAIN :)
+	
+	private void request_EDT_etudiant() {
+		String id= m1.getText();
+		String date=m2.getText();
+		
+		String request = "Select Cours.*"
+				       + " From Cours natural join Matiere natural join Parcours natural join Etudiant natural join Horaire "
+				       + " Where idEtudiant =" + id 
+				       + " AND jour="+ date+";";
+		m1.setText(request);
+		m2.setText("");
 	}
 
 
