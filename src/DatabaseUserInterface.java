@@ -84,9 +84,9 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		
 		addToApplet();
 
-		currentTable = tables.Etudiant;
-
 		setStatus("Waiting for user actions.");
+		
+		//connectToDatabase();
 	}
 
 	protected void initComponent() {
@@ -248,9 +248,10 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		} else 
 			
 		if(cause == itemEtudiant) {
-			m2.setText("Prenom");
+			insertDatabase();
+			/*m2.setText("Prenom");
 			m3.setText("idEtudiant");
-			currentTable = tables.Etudiant;
+			currentTable = tables.Etudiant;*/
 		}
 		
 		
@@ -294,6 +295,20 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	private void setStatus(String text){
 		mStat.setText("Status: " + text);
 	}
+	
+	private void setCurrentTable(String text) {
+		currentTable = tables.valueOf(text);
+		switch(currentTable) {
+		case Etudiant :
+			m1.setText("nom");
+			m2.setText("prénom");
+			m3.setText("idEtudiant");
+			m4.setText("idParcours");
+			m5.setText("");
+			tfTable.setText(currentTable + "");
+		}
+			
+	}
 
 	/**
 	 * Procedure, where the database connection should be implemented. 
@@ -306,7 +321,9 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			//STEP 3: Open a connection
 			System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			
 			setStatus("Connected to the database");
+			setCurrentTable("Etudiant");
 		} catch(Exception e){
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -351,9 +368,6 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			mRes.append("\n");
 			mRes.append("\n");
 			while(rs.next()) {
-				System.out.println(rsmd.getColumnCount());
-				//Commence à 1
-				System.out.println(rsmd.getColumnName(1));
 				
 				for(int i=1; i <= nbCol; i++) {
 					mRes.append(rs.getString(i) + "	|	");
@@ -381,10 +395,8 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			String id = m3.getText();
 			
 			if(currentTable == tables.Etudiant) {
-				stmt = conn.createStatement();
-				String requete = "insert into etudiant(nom, prenom, idEtudiant) values(\"" + name + "\",\"" + prenom + "\"," + id +");";
-				System.out.println(requete);
-				stmt.execute(requete);
+				insertEtudiant();
+				
 			} else {
 				stmt = conn.createStatement();
 				String requete = "insert into personne(age, nom, couleuryeux) values(" + prenom + ",\"" + name + "\",\"" + id +"\");";
@@ -399,6 +411,18 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			setStatus("Insertion failed");
 		}
 
+	}
+	
+	private void insertEtudiant() throws Exception {
+		String name = m1.getText();
+		String prenom = m2.getText();
+		String id = m3.getText();
+		String idP = m4.getText();
+		stmt = conn.createStatement();
+		String requete = "insert into Etudiant(nom, prenom, idEtudiant, idParcours) values(\"" + name + "\",\"" + prenom + "\"," + id +", " + idP + ");";
+		System.out.println(requete);
+		stmt.execute(requete);
+		
 	}
 	
 	
