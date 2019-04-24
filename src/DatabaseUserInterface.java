@@ -27,9 +27,10 @@ import javax.swing.JPanel;
  * 
  * @author zmiklos
  *
- */
+ * dfssf
+ * */
 public class DatabaseUserInterface extends java.applet.Applet implements ActionListener {
-//burk burk burk
+
 	private TextField mStat, m1, m2, m3, tfTable;
 	TextArea mRes;
 	private Button b1, b2, b3, b4;
@@ -43,7 +44,6 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     JMenuItem item1 = new JMenuItem("Liste de tous les étudiants");
     JMenuItem item2 = new JMenuItem("Requete aléatoire");
     JMenuItem itemConnect = new JMenuItem("connect");
-    JMenuItem itemDisconnect = new JMenuItem("disconnect");
 	
 	
 	private static final long serialVersionUID = 1L; 
@@ -167,11 +167,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		menu.add(item1);
 	    menu.addSeparator();
 	    menu.add(item2);
-	    
-	    
 	    menuBase.add(itemConnect);
-	    
-	    
 		menuBar.add(menuBase);
 	    menuBar.add(menu);
 	    
@@ -213,7 +209,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 
 		// Act depending on the user action
 		// Button CONNECT
-		if (cause == b1 || cause == itemConnect)
+		if (cause == b1)
 		{
 			connectToDatabase();
 		} else
@@ -240,7 +236,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			m2.setText("Prenom");
 			m3.setText("idEtudiant");
 			currentTable = tables.Etudiant;
-		} 
+		}
 		
 		
 		
