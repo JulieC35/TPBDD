@@ -42,12 +42,23 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     JMenuItem itemCours, itemCreneaux, itemEnseignant, itemEtudiant, itemHoraire, itemMatiere, itemParcours, itemSalle;
     JMenuItem item1 = new JMenuItem("Liste de tous les étudiants");
     JMenuItem item2 = new JMenuItem("Requete aléatoire");
+
     JMenuItem itemConnect = new JMenuItem("Connect");
     JMenuItem itemDisconnect = new JMenuItem("Disconnect");
     JMenuItem itemQuery = new JMenuItem("Query");
+    
+    
+    
+    
+    // Requete ROMAIN 
+    JMenuItem EDT_etudiant = new JMenuItem("EDT pour un etudiant");
+    JMenuItem EDT_parcours = new JMenuItem("EDT pour un parcours");
+    JMenuItem EDT_prof_crenaux = new JMenuItem("EDT pour un prof à un crénaux spécifique");
+
 	
-	
-	private static final long serialVersionUID = 1L; 
+    
+    
+    private static final long serialVersionUID = 1L; 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 	static final String DB_URL = "jdbc:mysql://mysql.istic.univ-rennes1.fr/base_17006900";
 	static final String USER = "user_17006900";
@@ -131,6 +142,13 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		itemQuery.addActionListener(this);
 
 		
+		//Ajout item requete Romain	
+        EDT_etudiant.addActionListener(this);
+        EDT_parcours.addActionListener(this); 
+        EDT_prof_crenaux.addActionListener(this); 
+		     
+        
+        
 		m1.setText("Name (e.g. John Smith) - Please enter here!");  //According to the database schema
 		m2.setText("Age (e.g. 23)  - Please enter here!"); //According to the database schema
 		m3.setText("Color of the eye (e.g. green) - Please enter here!");  //According to the database schema
@@ -168,6 +186,14 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		//pBut.add(menuInsertBar);
 		
 		//add(pBut, BorderLayout.WEST);
+		
+		
+		
+		//Ajout requete menu romain
+		menu.add(this.EDT_etudiant);
+	    menu.add(this.EDT_parcours);
+	    menu.add(this.EDT_prof_crenaux);
+		
 		
 		menu.add(item1);
 	    menu.addSeparator();
@@ -271,7 +297,17 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		}
 		
 		
+		else if(cause == this.EDT_etudiant) {
+			
+		}
 		
+		else if(cause == this.EDT_parcours) {
+			
+		}
+		
+		else if(cause == this.EDT_prof_crenaux) {
+			
+		}
 		
 		else {
 			System.out.println("button : " + cause.toString());
