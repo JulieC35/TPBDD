@@ -52,7 +52,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     
     
     // Requete ROMAIN 
-    JMenuItem EDT_etudiant = new JMenuItem("EDT pour un etudiant");
+    JMenuItem EDT_etudiant = new JMenuItem("EDT pour un etudiant à un jour donné");
     JMenuItem EDT_parcours = new JMenuItem("EDT pour un parcours");
     JMenuItem EDT_prof_crenaux = new JMenuItem("EDT pour un prof à un crénaux spécifique");
 
@@ -104,10 +104,17 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		m5 = new TextField(150);
 		tfTable = new TextField(150); 
 		pChampsQuery = new JPanel();
+
 		//m1.setText("Name (e.g. John Smith) - Please enter here!");  //According to the database schema
 		//m2.setText("Age (e.g. 23)  - Please enter here!"); //According to the database schema
 		//m3.setText("Color of the eye (e.g. green) - Please enter here!");  //According to the database schema
 		tfTable.setText("Table to insert (e.g. Etudiant) - Please enter here!"); 
+
+		m1.setText("Champ 1");  //According to the database schema
+		m2.setText("Champ 2"); //According to the database schema
+		m3.setText("Champ 3");  //According to the database schema
+		m4.setText("Champ 4"); 
+		
 		
 		//Champs résultat
 		mRes = new TextArea(10,150);
@@ -274,7 +281,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		}
 		
 		else if(cause == this.EDT_parcours) {
-			
+			request_parcours();
 		}
 		
 		else if(cause == this.EDT_prof_crenaux) {
@@ -431,13 +438,27 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	private void request_EDT_etudiant() {
 		String id= m1.getText();
 		String date=m2.getText();
-		
 		String request = "SELECT Matiere.nom, Horaire.Jour, Crenaux.Nom, Cours.idSalle"
-				       + "FROM Etudiant JOIN Matiere on Etudiant.idParcours = Matiere.idParcours join Cours on Cours.matiere = Matiere.nom join Horaire on Cours.idHoraire=Horaire.idHoraire join Crenaux on Crenaux.idCrenaux = Horaire.idCrenaux "
+				       + " FROM Etudiant JOIN Matiere on Etudiant.idParcours = Matiere.idParcours join Cours on Cours.matiere = Matiere.nom join Horaire on Cours.idHoraire=Horaire.idHoraire join Crenaux on Crenaux.idCrenaux = Horaire.idCrenaux "
 				       + " Where idEtudiant =" + id 
 				       + " AND Horaire.jour=\""+ date+"\";";
 		m1.setText(request);
 		m2.setText("");
+		queryDatabase();
+		
+	}
+	
+	private void request_parcours() {
+		String nom_parcours= m1.getText();
+		
+		
+		String request = "SELECT Matiere.nom, Horaire.Jour, Crenaux.Nom, Cours.idSalle"
+				       + " FROM Cours JOIN Matiere on Cours.matiere = Matiere.nom JOIN Parcours on Parcours.idParcours = Matiere.idParcours JOIN Horaire on Cours.idHoraire=Horaire.idHoraire JOIN Crenaux on Crenaux.idCrenaux = Horaire.idCrenaux "
+				       + " Where Parcours.Nom = \""+ nom_parcours+"\";";
+		m1.setText(request);
+		m2.setText("");
+		queryDatabase();
+		
 	}
 
 
