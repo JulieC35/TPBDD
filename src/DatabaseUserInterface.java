@@ -401,10 +401,10 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		String id= m1.getText();
 		String date=m2.getText();
 		
-		String request = "Select Cours.*"
-				       + " From Cours natural join Matiere natural join Parcours natural join Etudiant natural join Horaire "
+		String request = "SELECT Matiere.nom, Horaire.Jour, Crenaux.Nom, Cours.idSalle"
+				       + "FROM Etudiant JOIN Matiere on Etudiant.idParcours = Matiere.idParcours join Cours on Cours.matiere = Matiere.nom join Horaire on Cours.idHoraire=Horaire.idHoraire join Crenaux on Crenaux.idCrenaux = Horaire.idCrenaux "
 				       + " Where idEtudiant =" + id 
-				       + " AND jour="+ date+";";
+				       + " AND Horaire.jour=\""+ date+"\";";
 		m1.setText(request);
 		m2.setText("");
 	}
