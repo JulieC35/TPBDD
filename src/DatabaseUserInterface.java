@@ -114,10 +114,17 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		m5 = new TextField(150);
 		tfTable = new TextField(150); 
 		pChampsQuery = new JPanel();
+
+		//m1.setText("Name (e.g. John Smith) - Please enter here!");  //According to the database schema
+		//m2.setText("Age (e.g. 23)  - Please enter here!"); //According to the database schema
+		//m3.setText("Color of the eye (e.g. green) - Please enter here!");  //According to the database schema
+		tfTable.setText("Table to insert (e.g. Etudiant) - Please enter here!"); 
+
 		m1.setText("Champ 1");  //According to the database schema
 		m2.setText("Champ 2"); //According to the database schema
 		m3.setText("Champ 3");  //According to the database schema
-		tfTable.setText("Champ 4"); 
+		m4.setText("Champ 4"); 
+		
 		
 		//Champs résultat
 		mRes = new TextArea(10,150);
