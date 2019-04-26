@@ -1,17 +1,20 @@
 
 import java.awt.BorderLayout;
+
+
 import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.swing.JButton;
+import java.util.*;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -51,15 +54,21 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     JMenuItem itemInsert = new JMenuItem("Insert");
     JMenu menuInsert = new JMenu("Insert");
     
+    ArrayList<JMenuItem> l = new ArrayList<JMenuItem>();
     
-    
-    
-    // Requete ROMAIN 
+   
+    // Requete ROMAIN
     JMenuItem EDT_etudiant = new JMenuItem("EDT pour un etudiant à un jour donné");
     JMenuItem EDT_parcours = new JMenuItem("EDT pour un parcours");
-    JMenuItem EDT_prof_crenaux = new JMenuItem("EDT pour un prof à un crénaux spécifique");
+    JMenuItem EDT_prof_crenaux = new JMenuItem("EDT pour un prof à un jour donné");
+    JMenuItem HORAIRE_prochainCours = new JMenuItem ("Horaire du prochain cours d'une matiére");
+    JMenuItem ENS_matiere = new JMenuItem ("Nom des enseignants pour une matiére");
+    JMenuItem EDT_salle = new JMenuItem ("EDT d'une salle");
+    JMenuItem TP_occupation_salle = new JMenuItem ("Temps d’occupation d’une salle sur 1 jours");
+    JMenuItem TP_moy_occupation_tp = new JMenuItem ("Temps d’occupation moyen des salles de tp sur 1 jours");
+    JMenuItem SALLE_libre = new JMenuItem("Liste des salles non-occupées");
+    
 
-	
     
     
     private static final long serialVersionUID = 1L; 
@@ -99,6 +108,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		mStat.setEditable(false);
 		panStatus = new JPanel();
 		
+
 		//Champs de texte
 		m1 = new TextField(150);
 		m2 = new TextField(150);
@@ -155,10 +165,17 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		item1.addActionListener(this);
 		item2.addActionListener(this);
 		
+		
 		//Ajout item requete Romain	
         EDT_etudiant.addActionListener(this);
         EDT_parcours.addActionListener(this); 
-        EDT_prof_crenaux.addActionListener(this); 
+        EDT_prof_crenaux.addActionListener(this);
+        HORAIRE_prochainCours.addActionListener(this);
+        ENS_matiere.addActionListener(this);
+        EDT_salle.addActionListener(this);
+        TP_occupation_salle.addActionListener(this);
+        TP_moy_occupation_tp.addActionListener(this);
+        SALLE_libre.addActionListener(this);
 	}
 	
 	protected void addToApplet() {
@@ -186,8 +203,12 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		menu.add(this.EDT_etudiant);
 	    menu.add(this.EDT_parcours);
 	    menu.add(this.EDT_prof_crenaux);
-		
-		
+		menu.add(this.TP_occupation_salle);
+		menu.add(this.TP_moy_occupation_tp);
+		menu.add(this.HORAIRE_prochainCours);
+		menu.add(this.EDT_salle);
+		menu.add(this.ENS_matiere);
+		menu.add(this.SALLE_libre);
 		menu.add(item1);
 	    menu.addSeparator();
 	    menu.add(item2);
@@ -297,9 +318,26 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		}
 		
 		else if(cause == this.EDT_prof_crenaux) {
-			
+			request_EDT_prof_crenaux();
 		}
-		
+		else if (cause == this.TP_occupation_salle) {
+			request_TP_occupation_salle();
+		}
+		else if (cause == TP_moy_occupation_tp) {
+			request_TP_moy_occupation_tp();
+		}
+		else if (cause == EDT_salle) {
+			request_EDT_salle();
+		}
+		else if (cause == HORAIRE_prochainCours) {
+			request_HORAIRE_prochainCours();
+		}
+		else if (cause == ENS_matiere) {
+			request_ENS_matiere();
+		}
+		else if (cause== SALLE_libre) {
+			request_SALLE_libre();
+		}
 		else {
 			System.out.println("button : " + cause.toString());
 		}
@@ -614,6 +652,65 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		queryDatabase();
 		
 	}
-
+	
+	private void request_TP_occupation_salle() {
+		String idSalle=m1.getText();
+		String jour=m2.getText();
+		
+		String request = "SELECT count(idCrenaux)*2 FROM Cours NATURAL JOIN Horaire NATURAL JOIN Crenaux "
+				         + " WHERE idSalle="+idSalle+" AND Horaire.Jour=\""+jour+"\";";
+		m1.setText(request);
+		m2.setText("");
+		queryDatabase();
+		
+	}
+    
+	private void request_TP_moy_occupation_tp() {
+		String request = "SELECT AVG(heures.H) FROM (SELECT count(idCrenaux)*2 as H FROM Cours NATURAL JOIN Horaire NATURAL JOIN Crenaux WHERE Horaire.Jour='2019-04-05' GROUP BY Cours.idSalle) as heures;";
+		m1.setText(request);
+		queryDatabase();
+	}
+	
+	private void request_EDT_salle() {
+		String idSalle=m1.getText();
+		String jour=m2.getText();
+		String request = "SELECT Horaire.Jour, Crenaux.Nom, Cours.matiere FROM Cours NATURAL JOIN Horaire NATURAL JOIN Crenaux WHERE Cours.idSalle="+idSalle
+				         +" AND Horaire.Jour=\""+jour+"\";";
+		m1.setText(request);
+		m2.setText("");
+		queryDatabase();
+	}
+	
+	private void request_EDT_prof_crenaux() {
+		String id= m1.getText();
+		String jour=m2.getText();
+		String request="SELECT  Cours.matiere,Horaire.Jour,Crenaux.Nom FROM Cours NATURAL JOIN Horaire NATURAL JOIN Crenaux WHERE Cours.idEnseignant="
+				+id +" AND Horaire.Jour=\""+jour+"\";";
+		m1.setText(request);
+		m2.setText("");
+		queryDatabase();
+	}
+	
+	private void request_HORAIRE_prochainCours() {
+		String cours= m1.getText();
+		String request ="SELECT MAX(Crenaux.Nom),Horaire.Jour "FROM Cours NATURAL JOIN Crenaux NATURAL JOIN Horaire \n" + 
+				"WHERE Cours.matiere='\n" + 
+				"
+		m1.setText(request);
+		m2.setText("");
+		queryDatabase();
+	}
+	
+	private void request_ENS_matiere() {
+		String matiere= m1.getText();
+		String request = "SELECT Enseignant.Nom , Enseignant.Prenom FROM Enseignant NATURAL JOIN Cours WHERE Cours.matiere='"+matiere+"';";
+		m1.setText(request);
+		m2.setText("");
+		queryDatabase();
+	}
+	
+	private void request_SALLE_libre() {
+		
+	}
 
 }
