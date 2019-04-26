@@ -539,9 +539,9 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	
 	private void request_HORAIRE_prochainCours() {
 		String cours= m1.getText();
-		String request ="SELECT MAX(Crenaux.Nom),Horaire.Jour "FROM Cours NATURAL JOIN Crenaux NATURAL JOIN Horaire \n" + 
-				"WHERE Cours.matiere='\n" + 
-				"
+		String request ="SELECT MAX(Crenaux.Nom),Horaire.Jour \n" + 
+				"FROM Cours NATURAL JOIN Crenaux NATURAL JOIN Horaire \n" + 
+				"WHERE Cours.matiere='"+
 		m1.setText(request);
 		m2.setText("");
 		queryDatabase();
