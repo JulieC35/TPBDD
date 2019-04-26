@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.JButton;
 import java.util.*;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -32,6 +33,7 @@ import javax.swing.JPanel;
 public class DatabaseUserInterface extends java.applet.Applet implements ActionListener {
 
 	private TextField mStat, m1, m2, m3, m4, m5, tfTable;
+	JButton tcourrante;
 	TextArea mRes;
 	JPanel panStatus, pChampsQuery;
 	JMenuBar menuBar = new JMenuBar();
@@ -49,6 +51,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     JMenuItem itemConnect = new JMenuItem("Connect");
     JMenuItem itemDisconnect = new JMenuItem("Disconnect");
     JMenuItem itemQuery = new JMenuItem("Query");
+    JMenuItem itemInsert = new JMenuItem("Insert");
     JMenu menuInsert = new JMenu("Insert");
     
     ArrayList<JMenuItem> l = new ArrayList<JMenuItem>();
@@ -75,7 +78,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	static final String PASS = "Forest35";
 	Connection conn = null;
 	Statement stmt = null;
-	enum tables {Cours, Creneaux, Enseignant, Etudiant, Horaire, Matiere, Parcours, Salle};
+	enum tables {Cours, Crenaux, Enseignant, Etudiant, Horaire, Matiere, Parcours, Salle};
 	tables currentTable;
 
 
@@ -112,7 +115,9 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		m3 = new TextField(150);
 		m4 = new TextField(150);
 		m5 = new TextField(150);
-		tfTable = new TextField(150); 
+		tfTable = new TextField(150);
+		tfTable.setName("Table courante");
+		tcourrante = new JButton("Changer");
 		pChampsQuery = new JPanel();
 
 		//m1.setText("Name (e.g. John Smith) - Please enter here!");  //According to the database schema
@@ -150,9 +155,11 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		itemConnect.addActionListener(this);
 		itemDisconnect.addActionListener(this);
 		itemQuery.addActionListener(this);
+		itemInsert.addActionListener(this);
 		//Base - Insert
 		menuInsert.addActionListener(this);
 		itemEtudiant.addActionListener(this);
+		tcourrante.addActionListener(this);
 		
 		//Requetes
 		item1.addActionListener(this);
@@ -213,7 +220,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	    menuBase.addSeparator();
 	    menuBase.add(itemQuery);
 	    menuBase.addSeparator();
-	    menuBase.add(menuInsert);
+	    menuBase.add(itemInsert);
 	    
 		menuBar.add(menuBase);
 	    menuBar.add(menu);
@@ -228,12 +235,13 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		pChampsQuery.add(m4);
 		pChampsQuery.add(m5);
 		pChampsQuery.add(tfTable);
+		pChampsQuery.add(tcourrante);
 
 		
 		pChampsQuery.add(mRes);
 
 		
-		add(pChampsQuery);//, BorderLayout.CENTER);
+		add(pChampsQuery);
 		
 	}
 
@@ -270,7 +278,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		} else
 
 		//Button INSERT
-		if (cause == menuInsert)
+		if (cause == itemInsert)
 		{
 			insertDatabase();
 		} else 
@@ -280,6 +288,10 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			/*m2.setText("Prenom");
 			m3.setText("idEtudiant");
 			currentTable = tables.Etudiant;*/
+		} else
+		
+		if(cause == tcourrante) {
+			setCurrentTable(tfTable.getText());
 		}
 		
 		
@@ -343,15 +355,75 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	
 	private void setCurrentTable(String text) {
 		currentTable = tables.valueOf(text);
+		tfTable.setText(currentTable + "");
 		switch(currentTable) {
 		case Etudiant :
-			m1.setText("nom");
-			m2.setText("prénom");
+			m1.setText("Nom");
+			m2.setText("Prénom");
 			m3.setText("idEtudiant");
 			m4.setText("idParcours");
 			m5.setText("");
-			tfTable.setText(currentTable + "");
+			break;
+		case Enseignant :
+			m1.setText("Nom");
+			m2.setText("Prénom");
+			m3.setText("idEnseignant");
+			m4.setText("");
+			m5.setText("");
+			break;
+			
+		case Cours :
+			m1.setText("Nom matière");
+			m2.setText("idEnseignant");
+			m3.setText("idSalle");
+			m4.setText("idHoraire");
+			m5.setText("idCours");			
+			break;
+			
+		case Crenaux : 
+			m1.setText("Nom du créneau");
+			m2.setText("id");
+			m3.setText("");
+			m4.setText("");
+			m5.setText("");
+			break;
+			
+		case Horaire :
+			m1.setText("Jour (sous la forme 2016-31-04)");
+			m2.setText("idCreneau");
+			m3.setText("idHoraire");
+			m4.setText("");
+			m5.setText("");
+			break;
+			
+		case Matiere : 
+			m1.setText("Nom de la matière");
+			m2.setText("idParcours");
+			m3.setText("");
+			m4.setText("");
+			m5.setText("");
+			break;
+			
+		case Parcours :
+			m1.setText("Nom");
+			m2.setText("idParcours");
+			m3.setText("");
+			m4.setText("");
+			m5.setText("");
+			break;
+			
+		case Salle :
+			m1.setText("Nom");
+			m2.setText("TP (1 pour oui, 0 pour non)");
+			m3.setText("idSalle");
+			m4.setText("");
+			m5.setText("");
+			break;
+			
+		default : 
 		}
+		
+			
 			
 	}
 
@@ -368,7 +440,6 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			conn = DriverManager.getConnection(DB_URL,USER,PASS);
 			
 			setStatus("Connected to the database");
-			setCurrentTable("Etudiant");
 		} catch(Exception e){
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -438,21 +509,39 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 			String name = m1.getText();
 			String prenom = m2.getText();
 			String id = m3.getText();
-			
+			setStatus("Inserting to the database");
 			if(currentTable == tables.Etudiant) {
 				insertEtudiant();
 				
-			} else {
+			} else 
+			if(currentTable == tables.Salle) {
 				stmt = conn.createStatement();
-				String requete = "insert into personne(age, nom, couleuryeux) values(" + prenom + ",\"" + name + "\",\"" + id +"\");";
+				String requete = "insert into Salle(idSalle, Nom, TP) values(" + m3.getText() + ", \"" + m1.getText() + "\", " + m2.getText() + ");";
 				System.out.println(requete);
 				stmt.execute(requete);
+				
+			}else if(currentTable == tables.Parcours){
+				insertParcours();
 			}
-			
-			setStatus("Inserting to the database");
+			else if(currentTable == tables.Matiere){
+				insertMatiere();	
+			}else if(currentTable == tables.Horaire){
+				insertHoraire();	
+			}
+			else if(currentTable == tables.Enseignant){
+				insertEnseignant();	
+			}
+			else if(currentTable == tables.Crenaux){
+				insertCreneaux();	
+			}
+			else if(currentTable == tables.Cours){
+				insertCours();	
+			}
+			setStatus("Insertion ok");
 			
 		} catch(Exception e){
 			System.err.println(e.getMessage());
+			e.printStackTrace();
 			setStatus("Insertion failed");
 		}
 
@@ -465,6 +554,71 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		String idP = m4.getText();
 		stmt = conn.createStatement();
 		String requete = "insert into Etudiant(nom, prenom, idEtudiant, idParcours) values(\"" + name + "\",\"" + prenom + "\"," + id +", " + idP + ");";
+		System.out.println(requete);
+		stmt.execute(requete);
+		
+	}
+	
+	private void insertParcours() throws Exception {
+		String name = m1.getText();
+		String id = m2.getText();
+		stmt = conn.createStatement();
+		String requete = "insert into Parcours(Nom,idParcours) values(\"" + name+ "\"," + id + ");";
+		System.out.println(requete);
+		stmt.execute(requete);
+		
+	}
+	
+	private void insertMatiere() throws Exception {
+		String name = m1.getText();
+		String id = m2.getText();
+		stmt = conn.createStatement();
+		String requete = "insert into Matiere(Nom,idParcours) values(\"" + name+ "\"," + id + ");";
+		System.out.println(requete);
+		stmt.execute(requete);
+		
+	}
+	
+	private void insertHoraire() throws Exception {
+		String idH = m3.getText();
+		String jour = m1.getText();
+		String idC = m2.getText();
+		stmt = conn.createStatement();
+		String requete = "insert into Horaire(idHoraire, Jour, idCrenaux) values(" + idH + ",\"" + jour + "\"," + idC + ");";
+		System.out.println(requete);
+		stmt.execute(requete);
+		
+	}
+	
+	private void insertEnseignant() throws Exception {
+		String id = m3.getText();
+		String name = m1.getText();
+		String prenom = m2.getText();
+		stmt = conn.createStatement();
+		String requete = "insert into Enseignant(idEnseignant, Nom, Prenom) values(" + id + ",\"" + name+ "\",\"" + prenom + "\");";
+		System.out.println(requete);
+		stmt.execute(requete);
+		
+	}
+	
+	private void insertCreneaux() throws Exception {
+		String name = m1.getText();
+		String id = m2.getText();
+		stmt = conn.createStatement();
+		String requete = "insert into Crenaux(Nom,idCrenaux) values(\"" + name + "\"," + id + ");";
+		System.out.println(requete);
+		stmt.execute(requete);
+		
+	}
+	
+	private void insertCours() throws Exception {
+		String idC = m5.getText();
+		String idH = m4.getText();
+		String idS = m3.getText();
+		String mat = m1.getText();
+		String idEns = m2.getText();
+		stmt = conn.createStatement();
+		String requete = "insert into Cours(idCours, idHoraire, idSalle, matiere, idEnseignant) values(" + idC + ","+ idH + ","+ idS + ",\""+ mat + "\"," + idEns + ");";
 		System.out.println(requete);
 		stmt.execute(requete);
 		

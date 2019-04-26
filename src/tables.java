@@ -2,7 +2,7 @@
 public enum tables {
 	//Nos objets initialisés
 	Cours("Cours"),
-	Creneaux("Crenaux"),
+	Crenaux("Crenaux"),
 	Enseignant("Enseignant"),
 	Etudiant("Etudiant"),
 	Horaire("Horaire"),
@@ -27,7 +27,7 @@ public enum tables {
 	public static tables getEnum(String table) {
 		switch(table) {
 		case "Cours" : return Cours;
-		case "Crenaux" : return Creneaux;
+		case "Crenaux" : return Crenaux;
 		case "Enseignant" : return Enseignant;
 		case "Etudiant" : return Etudiant;
 		case "Horaire"  : return Horaire;
