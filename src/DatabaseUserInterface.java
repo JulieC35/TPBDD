@@ -194,6 +194,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		menu.add(this.HORAIRE_prochainCours);
 		menu.add(this.EDT_salle);
 		menu.add(this.ENS_matiere);
+		menu.add(this.SALLE_libre);
 		menu.add(item1);
 	    menu.addSeparator();
 	    menu.add(item2);
@@ -314,6 +315,9 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		}
 		else if (cause == ENS_matiere) {
 			request_ENS_matiere();
+		}
+		else if (cause== SALLE_libre) {
+			request_SALLE_libre();
 		}
 		else {
 			System.out.println("button : " + cause.toString());
@@ -528,7 +532,9 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	
 	private void request_HORAIRE_prochainCours() {
 		String cours= m1.getText();
-		String request ="SELECT Crenaux.Nom,horaire.Jour FROM Cours NATURAL JOIN Crenaux WHERE Cours.matiere=\""+cours+"\";";
+		String request ="SELECT MAX(Crenaux.Nom),Horaire.Jour "FROM Cours NATURAL JOIN Crenaux NATURAL JOIN Horaire \n" + 
+				"WHERE Cours.matiere='\n" + 
+				"
 		m1.setText(request);
 		m2.setText("");
 		queryDatabase();
@@ -540,6 +546,10 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		m1.setText(request);
 		m2.setText("");
 		queryDatabase();
+	}
+	
+	private void request_SALLE_libre() {
+		
 	}
 
 }
