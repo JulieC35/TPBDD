@@ -274,7 +274,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		}
 		
 		else if(cause == this.EDT_parcours) {
-			
+			request_parcours();
 		}
 		
 		else if(cause == this.EDT_prof_crenaux) {
@@ -431,13 +431,36 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	private void request_EDT_etudiant() {
 		String id= m1.getText();
 		String date=m2.getText();
-		
-		String request = "SELECT Matiere.nom, Horaire.Jour, Crenaux.Nom, Cours.idSalle"
-				       + "FROM Etudiant JOIN Matiere on Etudiant.idParcours = Matiere.idParcours join Cours on Cours.matiere = Matiere.nom join Horaire on Cours.idHoraire=Horaire.idHoraire join Crenaux on Crenaux.idCrenaux = Horaire.idCrenaux "
+		String request;
+		if (date!="") {
+	    request = "SELECT Matiere.nom, Horaire.Jour, Crenaux.Nom, Cours.idSalle"
+				       + " FROM Etudiant JOIN Matiere on Etudiant.idParcours = Matiere.idParcours join Cours on Cours.matiere = Matiere.nom join Horaire on Cours.idHoraire=Horaire.idHoraire join Crenaux on Crenaux.idCrenaux = Horaire.idCrenaux "
 				       + " Where idEtudiant =" + id 
 				       + " AND Horaire.jour=\""+ date+"\";";
+		}
+		else
+		{
+		request = "SELECT Matiere.nom, Horaire.Jour, Crenaux.Nom, Cours.idSalle"
+				       + " FROM Etudiant JOIN Matiere on Etudiant.idParcours = Matiere.idParcours join Cours on Cours.matiere = Matiere.nom join Horaire on Cours.idHoraire=Horaire.idHoraire join Crenaux on Crenaux.idCrenaux = Horaire.idCrenaux "
+				       + " Where idEtudiant =" + id +";";
+		}
 		m1.setText(request);
 		m2.setText("");
+		queryDatabase();
+		
+	}
+	
+	private void request_parcours() {
+		String nom_parcours= m1.getText();
+		
+		
+		String request = "SELECT Matiere.nom, Horaire.Jour, Crenaux.Nom, Cours.idSalle"
+				       + " FROM Cours JOIN Matiere on Cours.matiere = Matiere.nom JOIN Parcours on Parcours.idParcours = Matiere.idParcours JOIN Horaire on Cours.idHoraire=Horaire.idHoraire JOIN Crenaux on Crenaux.idCrenaux = Horaire.idCrenaux "
+				       + " Where Parcours.Nom = \""+ nom_parcours+"\";";
+		m1.setText(request);
+		m2.setText("");
+		queryDatabase();
+		
 	}
 
 
