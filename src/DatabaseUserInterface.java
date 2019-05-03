@@ -43,9 +43,8 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     //Pour selectionner la table dans Base - Insert
     JMenuItem itemCours, itemCreneaux, itemEnseignant, itemEtudiant, itemHoraire, itemMatiere, itemParcours, itemSalle;
     
-    //Requetes actuelles dans Requetes
-    JMenuItem item1 = new JMenuItem("Liste de tous les étudiants");
-    JMenuItem item2 = new JMenuItem("Requete aléatoire");
+  
+  
 
     //Sous menus de Base
     JMenuItem itemConnect = new JMenuItem("Connect");
@@ -54,10 +53,10 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
     JMenuItem itemInsert = new JMenuItem("Insert");
     JMenu menuInsert = new JMenu("Insert");
     
-    ArrayList<JMenuItem> l = new ArrayList<JMenuItem>();
-    
    
-    // Requete ROMAIN
+    // Requete 
+    JMenuItem item1 = new JMenuItem("Liste de tous les étudiants");
+    JMenuItem item2 = new JMenuItem("Requete aléatoire");
     JMenuItem EDT_etudiant = new JMenuItem("EDT pour un etudiant à un jour donné");
     JMenuItem EDT_parcours = new JMenuItem("EDT pour un parcours");
     JMenuItem EDT_prof_crenaux = new JMenuItem("EDT pour un prof à un jour donné");
@@ -104,18 +103,18 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	protected void initComponent() {
 		
 		//Status
-		mStat = new TextField(150);
+		mStat = new TextField(100);
 		mStat.setEditable(false);
 		panStatus = new JPanel();
 		
 
 		//Champs de texte
-		m1 = new TextField(150);
-		m2 = new TextField(150);
-		m3 = new TextField(150);
-		m4 = new TextField(150);
-		m5 = new TextField(150);
-		tfTable = new TextField(150);
+		m1 = new TextField(100);
+		m2 = new TextField(100);
+		m3 = new TextField(100);
+		m4 = new TextField(100);
+		m5 = new TextField(100);
+		tfTable = new TextField(100);
 		tfTable.setName("Table courante");
 		tcourrante = new JButton("Changer");
 		pChampsQuery = new JPanel();
@@ -132,7 +131,7 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		
 		
 		//Champs résultat
-		mRes = new TextArea(10,150);
+		mRes = new TextArea(10,100);
 		mRes.setEditable(false);
 		mRes.setText("Query results");
 
@@ -295,12 +294,11 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 		}
 		
 		
-		
 		else 
 			
 		//Button Lister les étudiants
 		if (cause == item1) {
-			String req = "select * from " + currentTable + ";";
+			String req = "select * from Etudiant;";
 			m1.setText(req);
 			if(tfTable.getText().toLowerCase() == "etudiant") {
 				currentTable = tables.Etudiant;
@@ -693,9 +691,9 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	
 	private void request_HORAIRE_prochainCours() {
 		String cours= m1.getText();
-		String request ="SELECT MAX(Crenaux.Nom),Horaire.Jour \n" + 
-				"FROM Cours NATURAL JOIN Crenaux NATURAL JOIN Horaire \n" + 
-				"WHERE Cours.matiere='"+
+		String request ="SELECT MAX(Crenaux.Nom),Horaire.Jour "+ 
+				"FROM Cours NATURAL JOIN Crenaux NATURAL JOIN Horaire " + 
+				"WHERE Cours.matiere='"+cours+"' ORDER BY Horaire.Jour,Crenaux.Nom;";
 		m1.setText(request);
 		m2.setText("");
 		queryDatabase();
@@ -710,7 +708,12 @@ public class DatabaseUserInterface extends java.applet.Applet implements ActionL
 	}
 	
 	private void request_SALLE_libre() {
-		
+		String crenaux = m2.getText();
+		String horaire = m1.getText();
+		String request = "SELECT Salle.idSalle FROM Salle WHERE idSalle NOT IN(SELECT idSalle FROM Cours NATURAL JOIN Horaire WHERE Horaire.Jour='"+horaire+"' AND Horaire.idCrenaux="+crenaux+");";
+		m1.setText(request);
+		m2.setText("");
+		queryDatabase();
 	}
 
 }
